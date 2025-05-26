@@ -2,8 +2,8 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <title>CLMauseL Scoreboard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet">
+  <title>CLMauseL Olympiade</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
     import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
@@ -20,8 +20,13 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
-
     const container = document.getElementById("scoreboard");
+
+    function playSound() {
+      const audio = new Audio("https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg");
+      audio.volume = 0.3;
+      audio.play();
+    }
 
     function renderScores(data) {
       container.innerHTML = "";
@@ -29,9 +34,10 @@
       for (const [name, score] of entries) {
         const div = document.createElement("div");
         div.className = "team";
-        div.textContent = `${name}: ${score} Punkte`;
+        div.innerHTML = `<span class="teamname">${name}</span> <span class="points">${score}</span>`;
         container.appendChild(div);
       }
+      playSound();
     }
 
     onValue(ref(db, "scores"), (snapshot) => {
@@ -40,28 +46,62 @@
   </script>
   <style>
     body {
-      background: black;
-      color: #0ff;
-      font-family: 'Orbitron', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-image: url('https://i.imgur.com/1s6QeBG.png');
+      background-size: cover;
+      background-position: center;
+      font-family: 'Press Start 2P', cursive;
+      color: #fff;
       text-align: center;
-      padding: 20px;
     }
 
     h1 {
-      font-size: 3em;
-      margin-bottom: 20px;
-      text-shadow: 0 0 10px #0ff;
+      font-size: 24px;
+      margin: 20px;
+      text-shadow: 2px 2px #ff0080;
+    }
+
+    #scoreboard {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      padding-bottom: 50px;
     }
 
     .team {
-      font-size: 2em;
-      margin: 10px 0;
-      padding: 10px;
+      background: rgba(0, 0, 0, 0.6);
+      border: 3px dashed #ffcc00;
+      padding: 20px 40px;
+      font-size: 16px;
+      border-radius: 10px;
+      width: fit-content;
+      animation: pulse 1s ease-in-out infinite alternate;
+    }
+
+    .teamname {
+      color: #00ffff;
+      display: block;
+    }
+
+    .points {
+      font-size: 20px;
+      color: #ffcc00;
+    }
+
+    @keyframes pulse {
+      from {
+        transform: scale(1);
+      }
+      to {
+        transform: scale(1.05);
+      }
     }
   </style>
 </head>
 <body>
-  <h1>🏆 Aktueller Spielstand</h1>
-  <div id="scoreboard">Wird geladen...</div>
+  <h1>🎮 CLMauseL Olympiade Scoreboard</h1>
+  <div id="scoreboard">Lade Daten...</div>
 </body>
 </html>

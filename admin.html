@@ -6,7 +6,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet">
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDbhN3NvHpPDgUOBzBGeu0kzpCzgW8hDSw",
@@ -20,30 +20,29 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
-
-    const players = ["BlackScreen", "Alt+F4", "404 Not Found", "500 Internal Game Error", "ragequit"];
     let scores = {};
 
     function syncToFirebase() {
       set(ref(db, "scores"), scores);
     }
 
-    window.adjustPoints = function (player, value) {
-      scores[player] += value;
+    function adjustPoints(player, value) {
+      scores[player] = (scores[player] || 0) + value;
       if (scores[player] < 0) scores[player] = 0;
-      document.getElementById(`score-${player}`).textContent = scores[player];
       syncToFirebase();
-    };
+    }
 
-    window.onload = function () {
+    function buildUIFromData() {
       const tbody = document.getElementById("scoreBody");
       const select = document.getElementById("teamSelect");
-      players.forEach(name => {
-        scores[name] = 0;
+      tbody.innerHTML = "";
+      select.innerHTML = "";
+
+      for (const name in scores) {
         const row = document.createElement("tr");
         row.innerHTML = `
           <td>${name}</td>
-          <td id="score-${name}">0</td>
+          <td id="score-${name}">${scores[name]}</td>
           <td>
             <button onclick="adjustPoints('${name}', 1)">+1</button>
             <button onclick="adjustPoints('${name}', -1)">-1</button>
@@ -55,19 +54,25 @@
         option.value = name;
         option.textContent = name;
         select.appendChild(option);
-      });
+      }
 
       const container = document.getElementById("gameButtons");
+      container.innerHTML = "";
       for (let i = 1; i <= 15; i++) {
         const btn = document.createElement("button");
         btn.textContent = `Game ${i}`;
         btn.onclick = () => {
           const selected = document.getElementById("teamSelect").value;
-          window.adjustPoints(selected, i);
+          adjustPoints(selected, i);
         };
         container.appendChild(btn);
       }
-    };
+    }
+
+    onValue(ref(db, "scores"), (snapshot) => {
+      scores = snapshot.val() || {};
+      buildUIFromData();
+    });
   </script>
   <style>
     body {

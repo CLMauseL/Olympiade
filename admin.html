@@ -26,11 +26,11 @@
       set(ref(db, "scores"), scores);
     }
 
-    window.adjustPoints = function(player, value) {
+    function adjustPoints(player, value) {
       scores[player] = (scores[player] || 0) + value;
       if (scores[player] < 0) scores[player] = 0;
       syncToFirebase();
-    };
+    }
 
     function buildUIFromData() {
       const tbody = document.getElementById("scoreBody");
@@ -40,14 +40,27 @@
 
       for (const name in scores) {
         const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${name}</td>
-          <td id="score-${name}">${scores[name]}</td>
-          <td>
-            <button onclick="adjustPoints('${name}', 1)">+1</button>
-            <button onclick="adjustPoints('${name}', -1)">-1</button>
-          </td>
-        `;
+        const nameCell = document.createElement("td");
+        nameCell.textContent = name;
+        const scoreCell = document.createElement("td");
+        scoreCell.id = `score-${name}`;
+        scoreCell.textContent = scores[name];
+
+        const controlCell = document.createElement("td");
+        const plusBtn = document.createElement("button");
+        plusBtn.textContent = "+1";
+        plusBtn.addEventListener("click", () => adjustPoints(name, 1));
+
+        const minusBtn = document.createElement("button");
+        minusBtn.textContent = "-1";
+        minusBtn.addEventListener("click", () => adjustPoints(name, -1));
+
+        controlCell.appendChild(plusBtn);
+        controlCell.appendChild(minusBtn);
+
+        row.appendChild(nameCell);
+        row.appendChild(scoreCell);
+        row.appendChild(controlCell);
         tbody.appendChild(row);
 
         const option = document.createElement("option");
@@ -63,7 +76,7 @@
         btn.textContent = `Game ${i}`;
         btn.onclick = () => {
           const selected = document.getElementById("teamSelect").value;
-          window.adjustPoints(selected, i);
+          adjustPoints(selected, i);
         };
         container.appendChild(btn);
       }

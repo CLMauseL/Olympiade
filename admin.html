@@ -26,6 +26,10 @@
       set(ref(db, "scores"), scores);
     }
 
+    function setCurrentGame(name) {
+      set(ref(db, "currentGame"), name);
+    }
+
     function adjustPoints(player, value) {
       scores[player] = (scores[player] || 0) + value;
       if (scores[player] < 0) scores[player] = 0;
@@ -80,6 +84,19 @@
         };
         container.appendChild(btn);
       }
+
+      const gameSelect = document.getElementById("gameSelect");
+      const gameList = [
+        "Skribbl", "Yahtzee", "Guessr.tv", "Wordle", "Guess the Price",
+        "Geoguessr", "Quiz", "Codenames", "Wer wird milionär", "Uno",
+        "Higher lower", "Wikirace", "Stadt Land Fluss", "Map Game", "Auction Game"
+      ];
+      gameList.forEach(game => {
+        const opt = document.createElement("option");
+        opt.value = game;
+        opt.textContent = game;
+        gameSelect.appendChild(opt);
+      });
     }
 
     onValue(ref(db, "scores"), (snapshot) => {
@@ -160,5 +177,8 @@
   <select id="teamSelect"></select>
 
   <div class="game-buttons" id="gameButtons"></div>
+
+  <h2>🎲 Spiel wählen:</h2>
+  <select id="gameSelect" onchange="setCurrentGame(this.value)"></select>
 </body>
 </html>

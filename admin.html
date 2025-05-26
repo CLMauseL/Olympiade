@@ -26,11 +26,12 @@
       set(ref(db, "scores"), scores);
     }
 
-    function adjustPoints(player, value) {
-      scores[player] = (scores[player] || 0) + value;
-      if (scores[player] < 0) scores[player] = 0;
-      syncToFirebase();
-    }
+window.adjustPoints = function(player, value) {
+  scores[player] = (scores[player] || 0) + value;
+  if (scores[player] < 0) scores[player] = 0;
+  syncToFirebase();
+};
+
 
     function buildUIFromData() {
       const tbody = document.getElementById("scoreBody");

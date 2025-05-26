@@ -2,8 +2,8 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <title>CLMauseL Olympiade</title>
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <title>CLMauseL Olympiade Scoreboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
     import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
@@ -21,12 +21,7 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
     const container = document.getElementById("scoreboard");
-
-    function playSound() {
-      const audio = new Audio("https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg");
-      audio.volume = 0.3;
-      audio.play();
-    }
+    const gameDisplay = document.getElementById("currentGame");
 
     function renderScores(data) {
       container.innerHTML = "";
@@ -34,74 +29,90 @@
       for (const [name, score] of entries) {
         const div = document.createElement("div");
         div.className = "team";
-        div.innerHTML = `<span class="teamname">${name}</span> <span class="points">${score}</span>`;
+        div.innerHTML = `
+          <div class="team-name">${name}</div>
+          <div class="team-score" data-score="${score}">${score}</div>
+        `;
         container.appendChild(div);
       }
-      playSound();
     }
 
     onValue(ref(db, "scores"), (snapshot) => {
       renderScores(snapshot.val());
     });
+
+    onValue(ref(db, "currentGame"), (snapshot) => {
+      const game = snapshot.val();
+      if (gameDisplay) {
+        gameDisplay.textContent = `🎮 Aktuelles Spiel: ${game || 'Noch nicht gewählt'}`;
+      }
+    });
   </script>
   <style>
     body {
       margin: 0;
-      padding: 0;
-      background-image: url('https://i.imgur.com/1s6QeBG.png');
-      background-size: cover;
-      background-position: center;
-      font-family: 'Press Start 2P', cursive;
-      color: #fff;
+      font-family: 'Share Tech Mono', monospace;
+      background: repeating-linear-gradient(45deg, #111 0, #111 10px, #222 10px, #222 20px);
+      color: #0f0;
       text-align: center;
+      padding: 30px;
     }
 
     h1 {
-      font-size: 24px;
-      margin: 20px;
-      text-shadow: 2px 2px #ff0080;
+      font-size: 32px;
+      margin-bottom: 20px;
+      text-shadow: 0 0 10px #0f0;
+    }
+
+    #currentGame {
+      font-size: 20px;
+      margin-bottom: 40px;
+      color: #0ff;
+      text-shadow: 0 0 5px #0ff;
     }
 
     #scoreboard {
       display: flex;
       flex-direction: column;
-      align-items: center;
       gap: 20px;
-      padding-bottom: 50px;
+      align-items: center;
     }
 
     .team {
-      background: rgba(0, 0, 0, 0.6);
-      border: 3px dashed #ffcc00;
-      padding: 20px 40px;
-      font-size: 16px;
-      border-radius: 10px;
-      width: fit-content;
-      animation: pulse 1s ease-in-out infinite alternate;
+      background: #000;
+      border: 2px solid #0f0;
+      padding: 15px 30px;
+      border-radius: 8px;
+      box-shadow: 0 0 15px #0f0;
+      width: 60%;
+      animation: pulse 0.5s ease-in-out;
     }
 
-    .teamname {
-      color: #00ffff;
-      display: block;
+    .team-name {
+      font-size: 18px;
+      margin-bottom: 10px;
     }
 
-    .points {
-      font-size: 20px;
-      color: #ffcc00;
+    .team-score {
+      font-size: 32px;
+      animation: scorechange 0.3s ease-in-out;
     }
 
     @keyframes pulse {
-      from {
-        transform: scale(1);
-      }
-      to {
-        transform: scale(1.05);
-      }
+      from { transform: scale(0.98); }
+      to { transform: scale(1.02); }
+    }
+
+    @keyframes scorechange {
+      0% { transform: scale(1); color: #0f0; }
+      50% { transform: scale(1.2); color: #ff0; }
+      100% { transform: scale(1); color: #0f0; }
     }
   </style>
 </head>
 <body>
-  <h1>🎮 CLMauseL Olympiade Scoreboard</h1>
-  <div id="scoreboard">Lade Daten...</div>
+  <h1>🔴 CLMauseL Olympiade 🔴</h1>
+  <div id="currentGame">🎮 Aktuelles Spiel: Lade...</div>
+  <div id="scoreboard">Lade Punktestand...</div>
 </body>
 </html>

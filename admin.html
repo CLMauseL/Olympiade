@@ -26,12 +26,11 @@
       set(ref(db, "scores"), scores);
     }
 
-window.adjustPoints = function(player, value) {
-  scores[player] = (scores[player] || 0) + value;
-  if (scores[player] < 0) scores[player] = 0;
-  syncToFirebase();
-};
-
+    window.adjustPoints = function(player, value) {
+      scores[player] = (scores[player] || 0) + value;
+      if (scores[player] < 0) scores[player] = 0;
+      syncToFirebase();
+    };
 
     function buildUIFromData() {
       const tbody = document.getElementById("scoreBody");
@@ -64,7 +63,7 @@ window.adjustPoints = function(player, value) {
         btn.textContent = `Game ${i}`;
         btn.onclick = () => {
           const selected = document.getElementById("teamSelect").value;
-          adjustPoints(selected, i);
+          window.adjustPoints(selected, i);
         };
         container.appendChild(btn);
       }

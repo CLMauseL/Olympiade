@@ -26,9 +26,9 @@
       set(ref(db, "scores"), scores);
     }
 
-    function setCurrentGame(name) {
+    window.setCurrentGame = function(name) {
       set(ref(db, "currentGame"), name);
-    }
+    };
 
     function adjustPoints(player, value) {
       scores[player] = (scores[player] || 0) + value;

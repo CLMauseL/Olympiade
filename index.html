@@ -2,8 +2,8 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <title>CLMauseL Olympiade Scoreboard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <title>CLMauseL Olympiade</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
     import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
@@ -20,20 +20,18 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
-    const container = document.getElementById("scoreboard");
+
+    const scoreboard = document.getElementById("scoreboard");
     const gameDisplay = document.getElementById("currentGame");
 
     function renderScores(data) {
-      container.innerHTML = "";
+      scoreboard.innerHTML = "";
       const entries = Object.entries(data || {}).sort((a, b) => b[1] - a[1]);
       for (const [name, score] of entries) {
         const div = document.createElement("div");
         div.className = "team";
-        div.innerHTML = `
-          <div class="team-name">${name}</div>
-          <div class="team-score" data-score="${score}">${score}</div>
-        `;
-        container.appendChild(div);
+        div.innerHTML = `<span class="teamname">${name}</span><span class="score">${score}</span>`;
+        scoreboard.appendChild(div);
       }
     }
 
@@ -43,76 +41,65 @@
 
     onValue(ref(db, "currentGame"), (snapshot) => {
       const game = snapshot.val();
-      if (gameDisplay) {
-        gameDisplay.textContent = `🎮 Aktuelles Spiel: ${game || 'Noch nicht gewählt'}`;
-      }
+      gameDisplay.textContent = game ? `Aktuelles Spiel: ${game}` : "";
     });
   </script>
   <style>
     body {
       margin: 0;
-      font-family: 'Share Tech Mono', monospace;
-      background: repeating-linear-gradient(45deg, #111 0, #111 10px, #222 10px, #222 20px);
-      color: #0f0;
+      font-family: 'Orbitron', sans-serif;
+      background: url('abstract-gaming-i88umw46te70796u.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: #cceeff;
       text-align: center;
-      padding: 30px;
     }
-
     h1 {
-      font-size: 32px;
-      margin-bottom: 20px;
-      text-shadow: 0 0 10px #0f0;
+      font-size: 40px;
+      margin: 40px 0 20px;
+      color: #e0f0ff;
+      text-shadow: 0 0 20px #0044aa;
     }
-
     #currentGame {
-      font-size: 20px;
+      font-size: 22px;
       margin-bottom: 40px;
-      color: #0ff;
-      text-shadow: 0 0 5px #0ff;
+      color: #aaccff;
+      text-shadow: 0 0 10px #003366;
     }
-
     #scoreboard {
       display: flex;
       flex-direction: column;
-      gap: 20px;
       align-items: center;
+      gap: 24px;
+      padding-bottom: 60px;
     }
-
     .team {
-      background: #000;
-      border: 2px solid #0f0;
-      padding: 15px 30px;
-      border-radius: 8px;
-      box-shadow: 0 0 15px #0f0;
-      width: 60%;
-      animation: pulse 0.5s ease-in-out;
+      background-color: rgba(0, 32, 64, 0.7);
+      padding: 20px 40px;
+      border-radius: 12px;
+      min-width: 300px;
+      font-size: 24px;
+      box-shadow: 0 0 10px rgba(0, 128, 255, 0.3);
+      transition: transform 0.3s;
     }
-
-    .team-name {
-      font-size: 18px;
-      margin-bottom: 10px;
+    .team:hover {
+      transform: scale(1.03);
     }
-
-    .team-score {
-      font-size: 32px;
-      animation: scorechange 0.3s ease-in-out;
+    .teamname {
+      display: block;
+      font-size: 20px;
+      margin-bottom: 5px;
+      color: #ffffff;
     }
-
-    @keyframes pulse {
-      from { transform: scale(0.98); }
-      to { transform: scale(1.02); }
-    }
-
-    @keyframes scorechange {
-      0% { transform: scale(1); color: #0f0; }
-      50% { transform: scale(1.2); color: #ff0; }
-      100% { transform: scale(1); color: #0f0; }
+    .score {
+      font-size: 28px;
+      font-weight: bold;
+      color: #66ccff;
     }
   </style>
 </head>
 <body>
-  <h1>🔴 CLMauseL Olympiade 🔴</h1>
-  <div id="currentGame">🎮 Aktuelles Spiel: Lade...</div>
+  <h1>CLMauseL Olympiade</h1>
+  <div id="currentGame">Aktuelles Spiel wird geladen...</div>
   <div id="scoreboard">Lade Punktestand...</div>
 </body>
 </html>
